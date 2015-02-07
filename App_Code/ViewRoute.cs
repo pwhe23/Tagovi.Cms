@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SimpleInjector;
 
 namespace Site
 {
@@ -49,6 +50,12 @@ namespace Site
     public class ViewController : Controller
     {
         private static readonly Dictionary<string, Type> _models = new Dictionary<string, Type>();
+        private readonly Container _container;
+
+        public ViewController(Container container)
+        {
+            _container = container;
+        }
 
         public ActionResult ViewPage(string view)
         {
@@ -66,7 +73,7 @@ namespace Site
             }
 
             //Create an instance of the View's Model and Update it
-            var model = Activator.CreateInstance(modelType);
+            var model = _container.GetInstance(modelType);
             TryUpdateModel(model, null, null, null, null);
 
             //Else return standard View handling
