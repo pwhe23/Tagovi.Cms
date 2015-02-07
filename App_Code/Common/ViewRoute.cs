@@ -25,6 +25,14 @@ namespace Site
                 path += "Index";
             }
 
+            //See if they passed an Id
+            var arr = path.Split('/');
+            var id = StrToInt(arr[arr.Length - 1]);
+            if (id.HasValue)
+            {
+                path = string.Join("/", arr.Take(arr.Length - 1));
+            }
+
             //See if the View exists
             var view = path.Replace("~/", "~/Views/") + ".cshtml";
             if (!File.Exists(HostingEnvironment.MapPath(view)))
@@ -37,6 +45,10 @@ namespace Site
             route.Values.Add("controller", "View");
             route.Values.Add("action", "ViewPage");
             route.Values.Add("view", view);
+            if (id.HasValue)
+            {
+                route.Values.Add("id", id);
+            }
 
             return route;
         }
@@ -44,6 +56,15 @@ namespace Site
         public override VirtualPathData GetVirtualPath(RequestContext requestContext, RouteValueDictionary values)
         {
             return null;
+        }
+
+        private static int? StrToInt(string num)
+        {
+            if (string.IsNullOrEmpty(num))
+                return null;
+
+            int result;
+            return int.TryParse(num, out result) ? result : (int?)null;
         }
     };
 
@@ -57,7 +78,7 @@ namespace Site
             _container = container;
         }
 
-        public ActionResult ViewPage(string view)
+        public ActionResult ViewPage(int? id, string view)
         {
             //See if we've already cached the Model for this View
             if (!_models.ContainsKey(view))
@@ -74,9 +95,19 @@ namespace Site
 
             //Create an instance of the View's Model and Update it
             var model = _container.GetInstance(modelType);
-            TryUpdateModel(model, null, null, null, null);
+            if (id.HasValue)
+            {
+                model.GetType().GetProperty("Id").SetValue(model, id.Value);
+            }
+
+            //If Model is ViewModelBase let it do it's thing
+            if (model is ViewModelBase)
+            {
+                return ExecuteViewModel(view, (ViewModelBase)model);
+            }
 
             //Else return standard View handling
+            TryUpdateModel(model, null, null, null, null);
             return View(view, model);
         }
 
@@ -109,6 +140,45 @@ namespace Site
             return PartialView(view, model);
         }
 
+        private ActionResult ExecuteViewModel(ViewModelBase viewModel)
+        {
+            return ExecuteViewModel(null, viewModel);
+        }
+
+        private ActionResult ExecuteViewModel(string viewName, ViewModelBase viewModel)
+        {
+            if (viewModel == null)
+                return null;
+
+            viewModel.Initialize(this, viewName);
+            TryUpdateModel(viewModel, null, null, null, null);
+
+            var submit = Request.Form["_submit"];
+            if (string.IsNullOrWhiteSpace(submit))
+                submit = "Load";
+
+            return ExecuteViewModel(viewModel, submit);
+        }
+
+        private ActionResult ExecuteViewModel(ViewModelBase viewModel, string submit)
+        {
+            var method = viewModel.GetType().GetMethod(submit);
+
+            try
+            {
+                var result = method.Invoke(viewModel, new object[0]);
+                return (ActionResult)result;
+            }
+            catch (Exception ex)
+            {
+                if (submit == "Load")
+                    throw;
+
+                ViewData["Error"] = ex.InnerException.Message;
+                return ExecuteViewModel(viewModel, "Load");
+            }
+        }
+
         private static Type GetTypeFromView(string path)
         {
             //We're going to assume the View's first line looks like this "@model Full.Class.Name"
@@ -129,6 +199,7 @@ namespace Site
 
         protected bool TryUpdateModel(object model, string prefix, string[] includeProperties, string[] excludeProperties, IValueProvider valueProvider)
         {
+            if (Request.HttpMethod != "POST") return false;
             if (model == null) throw new ArgumentNullException("model");
             if (valueProvider == null) valueProvider = ValueProviderFactories.Factories.GetValueProvider(ControllerContext);
             var binders = ModelBinders.Binders;
@@ -149,6 +220,52 @@ namespace Site
             var flag = ((includeProperties == null) || (includeProperties.Length == 0)) || includeProperties.Contains(propertyName, StringComparer.OrdinalIgnoreCase);
             var flag2 = (excludeProperties != null) && excludeProperties.Contains(propertyName, StringComparer.OrdinalIgnoreCase);
             return (flag && !flag2);
+        }
+    };
+
+    public abstract class ViewModelBase
+    {
+        protected Controller Controller;
+        protected string ViewName;
+
+        public virtual void Initialize(Controller controller, string viewName)
+        {
+            Controller = controller;
+            ViewName = viewName;
+        }
+
+        public virtual ActionResult Load()
+        {
+            return View();
+        }
+
+        protected ActionResult View(object model = null)
+        {
+            Controller.ViewData.Model = model ?? this;
+            return new ViewResult
+            {
+                ViewData = Controller.ViewData,
+                TempData = Controller.TempData,
+                ViewName = ViewName,
+                ViewEngineCollection = Controller.ViewEngineCollection,
+            };
+        }
+
+        protected PartialViewResult PartialView(object model = null)
+        {
+            Controller.ViewData.Model = model ?? this;
+            return new PartialViewResult
+            {
+                ViewData = Controller.ViewData,
+                TempData = Controller.TempData,
+                ViewName = ViewName,
+                ViewEngineCollection = Controller.ViewEngineCollection,
+            };
+        }
+
+        protected ActionResult Redirect(string url)
+        {
+            return new RedirectResult(url);
         }
     };
 }

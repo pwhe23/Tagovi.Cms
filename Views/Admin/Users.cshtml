@@ -1,16 +1,51 @@
 ﻿@model Site.AdminUsersView
-<table>
-    <thead>
-        <tr>
-            <th>Email</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model.GetUsers())
-        {
+@{
+    Layout = "_Layout.cshtml";
+}
+@if (Model.Id == null)
+{
+    <a href="/Admin/Users/0" class="btn btn-primary">Add User</a>
+    <table class="table table-striped">
+        <thead>
             <tr>
-                <td>@user.Email</td>
+                <th>Id</th>
+                <th>Email</th>
+                <th>IsAdmin</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var user in Model.GetUsers())
+            {
+                <tr>
+                    <td><a href="/Admin/Users/@user.Id">Edit @user.Id</a></td>
+                    <td>@user.Email</td>
+                    <td>@user.IsAdmin</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <form role="form" method="post">
+        <div class='form-group'>
+            <label>Id:</label>
+            <div class="form-control">@Model.User.Id</div>
+        </div>
+        <div class='form-group'>
+            <label>Email:</label>
+            @Html.TextBoxFor(x => x.User.Email, new { @class = "form-control" })
+        </div>
+        <div class='form-group'>
+            <label>Password:</label>
+            @Html.PasswordFor(x => x.NewPassword, new { @class = "form-control" })
+        </div>
+        <div class='form-group'>
+            <label>Is Admin:</label>
+            @Html.CheckBoxFor(x => x.User.IsAdmin)
+        </div>
+        <button type="submit" name="_submit" value="Save" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default" onclick="window.location='/Admin/Users'">Cancel</button>
+        <button type="submit" name="_submit" value="Delete" class="btn btn-danger">Delete</button>
+    </form>
+}
