@@ -36,5 +36,17 @@
     <div class="container">
         @RenderBody()
     </div>
+    <footer class="footer">
+        <div class="container">
+            @if (Request.IsAuthenticated)
+            {
+                <a href="/Admin/Logout">Logout @User.Identity.Name</a>
+            }
+            else
+            {
+                <a href="/Admin/Login">Login</a>
+            }
+        </div>
+    </footer>
 </body>
 </html>

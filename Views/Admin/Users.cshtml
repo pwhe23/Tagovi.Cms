@@ -18,7 +18,7 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var user in Model.GetUsers())
+            @foreach (var user in Model.QueryUsers())
             {
                 <tr>
                     <td><a href="/Admin/Users/@user.Id">Edit @user.Id</a></td>
@@ -48,8 +48,8 @@ else
             <label>Is Admin:</label>
             @Html.CheckBoxFor(x => x.User.IsAdmin)
         </div>
-        <button type="submit" name="_submit" value="Save" class="btn btn-primary">Save</button>
+        <button type="submit" name="_submit" value="SaveUser" class="btn btn-primary">Save</button>
         <button type="button" class="btn btn-default" onclick="window.location='/Admin/Users'">Cancel</button>
-        <button type="submit" name="_submit" value="Delete" class="btn btn-danger">Delete</button>
+        <button type="submit" name="_submit" value="DeleteUser" class="btn btn-danger">Delete</button>
     </form>
 }

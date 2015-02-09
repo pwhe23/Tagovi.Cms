@@ -24,7 +24,8 @@ namespace Site
             if (user == null || string.IsNullOrWhiteSpace(Password) || !user.Password.Equals(Password))
                 throw new ApplicationException("Invalid Login");
 
-            SetPrincipal(user.Email, new string[0]);
+            var roles = user.IsAdmin ? new[] {"Admin"} : new string[0];
+            SetPrincipal(user.Email, roles);
             return Redirect("/");
         }
 

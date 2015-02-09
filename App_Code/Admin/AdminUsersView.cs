@@ -4,6 +4,7 @@ using System.Web.Mvc;
 
 namespace Site
 {
+    [Authorize(Roles = "Admin")]
     public class AdminUsersView : ViewModelBase
     {
         private readonly SiteDb _db;
@@ -24,7 +25,7 @@ namespace Site
             base.Initialize(controller, viewName);
         }
 
-        public List<User> GetUsers()
+        public List<User> QueryUsers()
         {
             var query = _db.Users.AsQueryable();
             if (OnlyAdmin)
@@ -34,7 +35,7 @@ namespace Site
             return query.ToList();
         }
 
-        public ActionResult Save()
+        public ActionResult SaveUser()
         {
             if (NewPassword.HasValue()) User.Password = NewPassword;
             if (!Id.HasValue()) _db.Users.Add(User);
@@ -42,7 +43,7 @@ namespace Site
             return Redirect("/Admin/Users");
         }
 
-        public ActionResult Delete()
+        public ActionResult DeleteUser()
         {
             if (Id.HasValue()) _db.Users.Remove(User);
             _db.SaveChanges();

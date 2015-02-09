@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.Security;
 using SimpleInjector;
 
 namespace Site
@@ -98,6 +99,13 @@ namespace Site
             if (id.HasValue)
             {
                 model.GetType().GetProperty("Id").SetValue(model, id.Value);
+            }
+
+            //Authorize
+            var authorize = model.GetType().GetAttribute<AuthorizeAttribute>();
+            if (authorize != null && (!Request.IsAuthenticated || authorize.Roles != ((FormsIdentity)User.Identity).Ticket.UserData))
+            {
+                return Redirect(FormsAuthentication.LoginUrl);
             }
 
             //If Model is ViewModelBase let it do it's thing

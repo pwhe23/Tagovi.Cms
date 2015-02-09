@@ -174,5 +174,11 @@ namespace Site
                 field.SetValue(obj, value.To(field.FieldType));
             }
         }
+
+        public static T GetAttribute<T>(this ICustomAttributeProvider type) where T : Attribute
+        {
+            var arr = (T[])type.GetCustomAttributes(typeof(T), false);
+            return arr.Length > 0 ? arr[0] : null;
+        }
     };
 }
