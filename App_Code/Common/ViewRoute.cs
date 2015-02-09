@@ -140,11 +140,6 @@ namespace Site
             return PartialView(view, model);
         }
 
-        private ActionResult ExecuteViewModel(ViewModelBase viewModel)
-        {
-            return ExecuteViewModel(null, viewModel);
-        }
-
         private ActionResult ExecuteViewModel(string viewName, ViewModelBase viewModel)
         {
             if (viewModel == null)
@@ -199,7 +194,6 @@ namespace Site
 
         protected bool TryUpdateModel(object model, string prefix, string[] includeProperties, string[] excludeProperties, IValueProvider valueProvider)
         {
-            if (Request.HttpMethod != "POST") return false;
             if (model == null) throw new ArgumentNullException("model");
             if (valueProvider == null) valueProvider = ValueProviderFactories.Factories.GetValueProvider(ControllerContext);
             var binders = ModelBinders.Binders;

@@ -13,6 +13,7 @@ namespace Site
             _db = db;
         }
 
+        public bool OnlyAdmin { get; set; }
         public int? Id { get; set; }
         public string NewPassword { get; set; }
         public User User { get; set; }
@@ -25,7 +26,12 @@ namespace Site
 
         public List<User> GetUsers()
         {
-            return _db.Users.ToList();
+            var query = _db.Users.AsQueryable();
+            if (OnlyAdmin)
+            {
+                query = query.Where(x => x.IsAdmin);
+            }
+            return query.ToList();
         }
 
         public ActionResult Save()
