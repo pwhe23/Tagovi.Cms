@@ -197,7 +197,11 @@ namespace Site
                 return null;
             }
 
-            return Type.GetType(arr[1], true);
+            var type = Type.GetType(arr[1], true);
+            if (type.BaseType != typeof(ViewModelBase))
+                return null;
+
+            return type;
         }
 
         protected bool TryUpdateModel(object model, string prefix, string[] includeProperties, string[] excludeProperties, IValueProvider valueProvider)

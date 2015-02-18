@@ -1,0 +1,9 @@
+﻿@model Part
+@functions
+{
+    public string Src { get; set; }
+    public string Title { get; set; }
+}
+@{ JsonConvert.PopulateObject(Model.Data, this); }
+
+<img src="@Src" alt="@Title" title="@Title" />

@@ -15,6 +15,7 @@ namespace Site
             Database.Log = x => System.Diagnostics.Debug.Write(x);
         }
 
+        public DbSet<Part> Parts { get; set; }
         public DbSet<User> Users { get; set; }
 
         internal class SiteDbMigrationConfiguration : DbMigrationsConfiguration<SiteDb>
@@ -27,6 +28,10 @@ namespace Site
 
             protected override void Seed(SiteDb context)
             {
+                context.Users.AddOrUpdate(x => x.Email, new[]
+                {
+                    new User{ Email = "paul@tagovi.com", Password = "pw", IsAdmin = true},
+                });
             }
         };
     };

@@ -1,7 +1,7 @@
 ﻿
 namespace Site
 {
-    public class HomeView
+    public class HomeView : ViewModelBase
     {
         public HomeView()
         {
