@@ -15,6 +15,7 @@ namespace Site
             Database.Log = x => System.Diagnostics.Debug.Write(x);
         }
 
+        public virtual DbSet<Page> Pages { get; set; }
         public virtual DbSet<Part> Parts { get; set; }
         public virtual DbSet<Post> Posts { get; set; }
         public virtual DbSet<User> Users { get; set; }
@@ -29,6 +30,11 @@ namespace Site
 
             protected override void Seed(SiteDb context)
             {
+                context.Pages.AddOrUpdate(x => x.Url, new []
+                {
+                    new Page { Url = null },
+                });
+
                 context.Users.AddOrUpdate(x => x.Email, new[]
                 {
                     new User{ Email = "paul@tagovi.com", Password = "pw", IsAdmin = true},

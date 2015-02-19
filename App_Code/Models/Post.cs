@@ -12,6 +12,7 @@ namespace Site
         [StringLength(250), Required]
         public string Title { get; set; }
 
+        [Index("IX_Post_Slug", IsUnique = true)]
         [StringLength(250)]
         public string Slug { get; set; }
 
@@ -23,9 +24,19 @@ namespace Site
 
         public DateTime Created { get; set; }
 
+        [ForeignKey("Page")]
+        public int? PageId { get; set; }
+
         [ForeignKey("User")]
         public int UserId { get; set; }
 
+        public virtual Page Page { get; set; }
         public virtual User User { get; set; }
+
+        [NotMapped]
+        public string Url
+        {
+            get { return (Page == null ? "" : Page.Url + "/") + Slug; }
+        }
     };
 }

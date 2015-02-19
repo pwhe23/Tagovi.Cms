@@ -1,13 +1,14 @@
-﻿@{
+﻿@using System.Data.Entity;
+@{
     List<Post> posts;
     using (var db = new SiteDb())
     {
-        posts = db.Posts.ToList();
+        posts = db.Posts.Include(x => x.Page).ToList();
     }
 }
 <ul>
     @foreach (var post in posts)
     {
-        <li><a href="/@post.Slug">@post.Title</a></li>
+        <li><a href="/@post.Url">@post.Title</a></li>
     }
 </ul>

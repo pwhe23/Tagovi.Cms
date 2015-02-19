@@ -46,5 +46,7 @@
     private static void ConfigureRoutes(RouteCollection routes)
     {
         routes.Add("ViewRoute", new ViewRoute());
+        routes.Add("PageRoute", new PageRoute());
+        routes.Add("PostRoute", new PostRoute());
     }
 </script>

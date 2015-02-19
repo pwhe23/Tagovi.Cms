@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
@@ -179,6 +181,11 @@ namespace Site
         {
             var arr = (T[])type.GetCustomAttributes(typeof(T), false);
             return arr.Length > 0 ? arr[0] : null;
+        }
+
+        public static IEnumerable<T> Leave<T>(this T[] arr, int count)
+        {
+            return arr.Take(arr.Length - count);
         }
     };
 }
