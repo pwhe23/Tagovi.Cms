@@ -1,9 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using Newtonsoft.Json;
 
 namespace Site
 {
@@ -17,7 +15,7 @@ namespace Site
                 foreach (var part in db.Parts.Where(x => x.Parent == null && x.Section == section))
                 {
                     var data = new ViewDataDictionary(part);
-                    sb.AppendLine(html.Partial("~/content/parts/" + part.Type + ".cshtml", data).ToHtmlString());
+                    sb.AppendLine("<div class='part'>" + html.Partial("~/content/parts/" + part.Type + ".cshtml", data).ToHtmlString() + "</div>");
                 }
             }
             return MvcHtmlString.Create(sb.ToString());

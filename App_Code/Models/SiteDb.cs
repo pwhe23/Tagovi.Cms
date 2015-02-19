@@ -15,8 +15,9 @@ namespace Site
             Database.Log = x => System.Diagnostics.Debug.Write(x);
         }
 
-        public DbSet<Part> Parts { get; set; }
-        public DbSet<User> Users { get; set; }
+        public virtual DbSet<Part> Parts { get; set; }
+        public virtual DbSet<Post> Posts { get; set; }
+        public virtual DbSet<User> Users { get; set; }
 
         internal class SiteDbMigrationConfiguration : DbMigrationsConfiguration<SiteDb>
         {

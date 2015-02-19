@@ -1,0 +1,13 @@
+﻿@{
+    List<Post> posts;
+    using (var db = new SiteDb())
+    {
+        posts = db.Posts.ToList();
+    }
+}
+<ul>
+    @foreach (var post in posts)
+    {
+        <li><a href="/@post.Slug">@post.Title</a></li>
+    }
+</ul>
