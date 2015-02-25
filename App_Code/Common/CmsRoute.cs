@@ -8,19 +8,45 @@ using System.Web.Routing;
 
 namespace Site
 {
-    public class PostRoute : RouteBase
+    public class CmsRoute : RouteBase
     {
         private static readonly Dictionary<string, int?> _pages;
 
-        static PostRoute()
+        static CmsRoute()
         {
             _pages = LoadPageRoutes();
         }
 
         public override RouteData GetRouteData(HttpContextBase httpContext)
         {
-            var path = httpContext.Request.AppRelativeCurrentExecutionFilePath ?? "";
-            var paths = path.ToLower().Split(new[] {'~', '/'}, StringSplitOptions.RemoveEmptyEntries);
+            var path = (httpContext.Request.AppRelativeCurrentExecutionFilePath ?? "").Replace("~/", "");
+            return FindPageRoute(path) ?? FindPostRoute(path);
+        }
+
+        private RouteData FindPageRoute(string path)
+        {
+            if (!_pages.ContainsKey(path))
+                return null;
+
+            Page page;
+            using (var db = new SiteDb())
+            {
+                var pageId = _pages[path];
+                page = db.Pages.Single(x => x.Id == pageId);
+            }
+
+            // Return controller action
+            var route = new RouteData(this, new MvcRouteHandler());
+            route.Values.Add("controller", "Cms");
+            route.Values.Add("action", "ViewPage");
+            route.Values.Add("page", page);
+
+            return route;
+        }
+
+        private RouteData FindPostRoute(string path)
+        {
+            var paths = path.ToLower().Split(new[] { '~', '/' }, StringSplitOptions.RemoveEmptyEntries);
             var parent = string.Join("/", paths.Leave(1));
             if (string.IsNullOrWhiteSpace(parent))
                 parent = "";
@@ -42,7 +68,7 @@ namespace Site
 
             // Return controller action
             var route = new RouteData(this, new MvcRouteHandler());
-            route.Values.Add("controller", "Post");
+            route.Values.Add("controller", "Cms");
             route.Values.Add("action", "ViewPost");
             route.Values.Add("post", post);
 
@@ -63,8 +89,13 @@ namespace Site
         }
     };
 
-    public class PostController : Controller
+    public class CmsController : Controller
     {
+        public ActionResult ViewPage(Page page)
+        {
+            return View("~/content/pages/Page.cshtml", page);
+        }
+
         public ActionResult ViewPost(Post post)
         {
             return View("~/content/posts/Post.cshtml", post);

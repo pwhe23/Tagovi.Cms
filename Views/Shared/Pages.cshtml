@@ -1,0 +1,15 @@
+﻿@using System.Data.Entity;
+@{
+    List<Site.Page> pages;
+    using (var db = new SiteDb())
+    {
+        pages = db.Pages.Where(x => x.Url != null).ToList();
+    }
+}
+<h2>Pages</h2>
+<ul>
+    @foreach (var page in pages)
+    {
+        <li><a href="/@page.Url">@page.Url</a></li>
+    }
+</ul>

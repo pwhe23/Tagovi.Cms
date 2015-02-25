@@ -6,6 +6,7 @@
         posts = db.Posts.Include(x => x.Page).ToList();
     }
 }
+<h2>Posts</h2>
 <ul>
     @foreach (var post in posts)
     {
