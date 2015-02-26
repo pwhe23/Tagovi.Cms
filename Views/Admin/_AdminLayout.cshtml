@@ -28,8 +28,12 @@
             </div>
             <div id="navbar" class="collapse navbar-collapse">
                 <ul class="nav navbar-nav">
-                    <li class="active"><a href="/">Site</a></li>
-                    <li class="active"><a href="/Admin/Users">Users</a></li>
+                    <li><a href="/">Site</a></li>
+                    @if (Request.IsAuthenticated)
+                    {
+                        <li><a href="/Admin/Pages">Pages</a></li>
+                        <li><a href="/Admin/Users">Users</a></li>
+                    }
                 </ul>
             </div><!--/.nav-collapse -->
         </div>

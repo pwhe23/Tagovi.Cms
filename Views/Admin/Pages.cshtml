@@ -1,0 +1,46 @@
+﻿@model Site.AdminPagesView
+@if (Model.Id == null)
+{
+    <form role="form" method="get" class="form-inline">
+        <a href="/Admin/Pages/0" class="btn btn-primary">Add Page</a>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Url</th>
+                <th>Parent</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var page in Model.QueryPages())
+            {
+                <tr>
+                    <td><a href="/Admin/Pages/@page.Id">Edit @page.Id</a></td>
+                    <td><a href="@page.Url">@page.Url</a></td>
+                    <td>@page.ParentId</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <form role="form" method="post">
+        <div class='form-group'>
+            <label>Id:</label>
+            <div class="form-control">@Model.Page.Id</div>
+        </div>
+        <div class='form-group'>
+            <label>Url:</label>
+            @Html.TextBoxFor(x => x.Page.Url, new { @class = "form-control" })
+        </div>
+        <div class='form-group'>
+            <label>Parent:</label>
+            @Html.TextBoxFor(x => x.Page.ParentId)
+        </div>
+        <button type="submit" name="_submit" value="SavePage" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default" onclick="window.location='/Admin/Pages'">Cancel</button>
+        <button type="submit" name="_submit" value="DeletePage" class="btn btn-danger">Delete</button>
+    </form>
+}
