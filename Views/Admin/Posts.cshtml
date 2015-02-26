@@ -1,0 +1,66 @@
+﻿@model Site.AdminPostsView
+@if (Model.Id == null)
+{
+    <form role="form" method="get" class="form-inline">
+        <a href="/Admin/Posts/0" class="btn btn-primary">Add Post</a>
+    </form>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Title</th>
+                <th>Created</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var post in Model.QueryPosts())
+            {
+                <tr>
+                    <td><a href="/Admin/Posts/@post.Id">Edit @post.Id</a></td>
+                    <td><a href="@post.Url">@post.Title</a></td>
+                    <td>@post.Created</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <form role="form" method="post">
+        <div class='form-group'>
+            <label>Id:</label>
+            <div class="form-control">@Model.Post.Id</div>
+        </div>
+        <div class='form-group'>
+            <label>Title:</label>
+            @Html.TextBoxFor(x => x.Post.Title, new { @class = "form-control" })
+        </div>
+        <div class='form-group'>
+            <label>Slug:</label>
+            @Html.TextBoxFor(x => x.Post.Slug, new { @class = "form-control" })
+        </div>
+        <div class='form-group'>
+            <label>Summary:</label>
+            @Html.TextAreaFor(x => x.Post.Summary, new { @class = "form-control", rows = 5 })
+        </div>
+        <div class='form-group'>
+            <label>Body:</label>
+            @Html.TextAreaFor(x => x.Post.Body, new { @class = "form-control", rows = 15 })
+        </div>
+        <div class='form-group'>
+            <label>Created:</label>
+            @Html.TextBoxFor(x => x.Post.Created, new { @class = "form-control" })
+        </div>
+        <div class='form-group'>
+            <label>User:</label>
+            @Html.TextBoxFor(x => x.Post.UserId, new { @class = "form-control" })
+        </div>
+        <div class='form-group'>
+            <label>Page:</label>
+            @Html.TextBoxFor(x => x.Post.PageId, new { @class = "form-control" })
+        </div>
+        <button type="submit" name="_submit" value="SavePost" class="btn btn-primary">Save</button>
+        <button type="button" class="btn btn-default" onclick="window.location='/Admin/Posts'">Cancel</button>
+        <button type="submit" name="_submit" value="DeletePost" class="btn btn-danger">Delete</button>
+    </form>
+}

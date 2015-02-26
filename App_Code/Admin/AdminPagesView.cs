@@ -27,6 +27,7 @@ namespace Site
         {
             var query = _db.Pages
                            .AsQueryable();
+
             return query.ToList();
         }
 
@@ -34,6 +35,7 @@ namespace Site
         {
             if (!Id.HasValue()) _db.Pages.Add(Page);
             _db.SaveChanges();
+
             return Redirect("/Admin/Pages");
         }
 
@@ -41,6 +43,7 @@ namespace Site
         {
             if (Id.HasValue()) _db.Pages.Remove(Page);
             _db.SaveChanges();
+
             return Redirect("/Admin/Pages");
         }
     };
